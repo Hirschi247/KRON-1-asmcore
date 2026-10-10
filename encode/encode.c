@@ -10,17 +10,6 @@
 
 static uint64_t instruction_word = 0;  // Global variable to hold the encoded instruction word
 
-// Each formatclass in isa.h needs a corresponding encoder function.
-// Each encoder function takes the token line and the isa entry, extracts the operands,
-// and constructs the 32-bit instruction word according to the bit layout specified in the ISA documentation.
-
-static void encode_rrr(Token *token_line, const Isa_Entry *entry) {
-    instruction_word = (entry->Prefix << 30)
-    | (entry->Subopcode << 23)
-    | (token_line[1].value << 18) // rd
-    | (token_line[2].value << 13) // rs1
-    | (token_line[3].value << 8); // rs2
-}
 
 static void encode_alu(Token *token_line, const Isa_Entry *entry) {
     uint64_t rd = (uint64_t)(token_line[1].value & KRON_MASK(KRON_REGISTER_WIDTH));
@@ -28,7 +17,7 @@ static void encode_alu(Token *token_line, const Isa_Entry *entry) {
     uint64_t rs1 = (uint64_t)(token_line[2].value & KRON_MASK(KRON_REGISTER_WIDTH));
     rs1 <<= KRON_RS1_POS;
 
-    if (entry->Controls & (1ULL << KRON_ALU_IMM_BIT))
+    if (entry->Controls & KRON_CTRL_ALU_IMM)
     {
         // Immediate value is used instead of rs2
         uint64_t imm = (uint64_t)(token_line[3].value & KRON_MASK(KRON_OPERAND_WIDTH));
@@ -74,7 +63,7 @@ static void encode_memory(Token *token_line, const Isa_Entry *entry) {
 }
 
 static void encode_jump(Token *token_line, const Isa_Entry *entry) {
-    if (entry->Controls & (1ULL << KRON_JUMP_IND_BIT))
+    if (entry->Controls & KRON_CTRL_JUMP_IND)
     {
         uint64_t reg = (uint64_t)(token_line[1].value & KRON_MASK(KRON_REGISTER_WIDTH));
         reg <<= KRON_JUMP_REG_POS;
@@ -94,7 +83,7 @@ uint64_t *encode (Token *token_line)
 {
     if (token_line[0].type != TOK_IDENT)
     {
-        perror ("Erster Token der Zeile ist kein IDENT");
+        fprintf(stderr, "Zeile %d: Zeile beginnt nicht mit einem Mnemonic\n", token_line[0].line);
         exit (-1);
     }
 
@@ -102,7 +91,7 @@ uint64_t *encode (Token *token_line)
 
     if (entry == NULL)
     {
-        fprintf(stderr, "Unbekanntes Mnemonic: %s\n", token_line[0].text);
+        fprintf(stderr, "Zeile %d: Unbekanntes Mnemonic: %s\n", token_line[0].line, token_line[0].text);
         exit(-1);
     }
 
