@@ -1,5 +1,5 @@
 //
-// Created by simon on 10.09.2026.
+// Created by Simon Hirsch on 10.09.2026.
 //
 
 #include "symtab.h"
@@ -21,5 +21,5 @@ void symtab_insert(Dict *d, Label *l)
 
 Label *symtab_lookup(Dict *d, char *name)
 {
-    return dict_get(d, name); // NULL, wenn das Label nicht existiert
+    return dict_get(d, name); // NULL if the label does not exist
 }

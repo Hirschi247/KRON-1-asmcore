@@ -1,5 +1,5 @@
 //
-// Created by simon on 10.09.2026.
+// Created by Simon Hirsch on 10.09.2026.
 //
 
 #include "scanner.h"
@@ -43,7 +43,7 @@ static int hexval(char d)
     return 0;
 }
 
-// Ein Register ist genau "R" gefolgt von mindestens einer Ziffer, z.B. "R0" oder "R31"
+// A register is exactly "R" followed by at least one digit, e.g. "R0" or "R31"
 static int is_register(const char *word)
 {
     if (word[0] != 'R' || word[1] == '\0')
@@ -87,12 +87,12 @@ Token scanner_next(Scanner *s)
         c = peek(s);
     }
 
-    token.line = s -> line; // fuer Fehlermeldungen
+    token.line = s -> line; // for error messages
 
     if (isalpha((unsigned char)c))
     {
-        // Erst das ganze Wort lesen, dann entscheiden, ob es ein Register ist.
-        // Sonst wuerde z.B. das Label "restart" als Register gelesen.
+        // Read the whole word first, then decide whether it is a register.
+        // Otherwise e.g. the label "restart" would be read as a register.
         while (isalnum((unsigned char)peek(s)))
         {
             char d = advance(s);
@@ -103,26 +103,26 @@ Token scanner_next(Scanner *s)
 
         if (peek(s) == ':')
         {
-            advance(s); // ':' verbrauchen
+            advance(s); // consume ':'
             token.type = TOK_LABEL;
             return token;
         }
 
-        if (is_register(token.text)) // WICHTIG: Register beginnen IMMER mit einem grossen R: r3 -> falsch, R3 -> korrekt
+        if (is_register(token.text)) // NOTE: registers ALWAYS start with an uppercase R: r3 -> wrong, R3 -> correct
         {
             token.type = TOK_REGISTER;
             token.value = 0;
-            // Abbruch, sobald die Nummer zu gross ist - sonst kann z.B. "R99999999999999999999" ueberlaufen
+            // Stop once the number is too large - otherwise e.g. "R99999999999999999999" could overflow
             for (int i = 1; token.text[i] != '\0' && token.value < KRON_REGISTER_COUNT; i++)
                 token.value = token.value * 10 + (token.text[i] - '0');
 
             if (token.value >= KRON_REGISTER_COUNT)
             {
                 char name[sizeof(token.text)];
-                strcpy(name, token.text); // snprintf darf nicht aus token.text in token.text schreiben
+                strcpy(name, token.text); // snprintf must not read from and write to token.text at the same time
 
                 token.type = TOK_ERROR;
-                snprintf(token.text, sizeof(token.text), "Ungueltiges Register %.10s", name); // %.10s: Meldung passt immer in token.text
+                snprintf(token.text, sizeof(token.text), "Invalid register %.10s", name); // %.10s: message always fits into token.text
             }
             return token;
         }
@@ -141,7 +141,7 @@ Token scanner_next(Scanner *s)
 
         if (c == '0' && peek(s) == 'x')
         {
-            advance(s); // 'x' verbrauchen
+            advance(s); // consume 'x'
 
             long num = 0;
 
@@ -198,7 +198,7 @@ Token scanner_next(Scanner *s)
 
         default:
             token.type = TOK_ERROR;
-            snprintf(token.text, sizeof(token.text), "Ungueltiges Zeichen '%c'", c);
+            snprintf(token.text, sizeof(token.text), "Invalid character '%c'", c);
             break;
     }
 

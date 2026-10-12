@@ -1,5 +1,5 @@
 //
-// Created by simon on 10.09.2026.
+// Created by Simon Hirsch on 10.09.2026.
 //
 
 #ifndef ASSEMBLER_SYMTAB_H

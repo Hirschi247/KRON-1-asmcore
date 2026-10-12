@@ -1,5 +1,5 @@
 //
-// Created by simon on 10.09.2026.
+// Created by Simon Hirsch on 10.09.2026.
 //
 
 #include "encode.h"
@@ -83,7 +83,7 @@ uint64_t *encode (Token *token_line)
 {
     if (token_line[0].type != TOK_IDENT)
     {
-        fprintf(stderr, "Zeile %d: Zeile beginnt nicht mit einem Mnemonic\n", token_line[0].line);
+        fprintf(stderr, "Line %d: Line does not start with a mnemonic\n", token_line[0].line);
         exit (-1);
     }
 
@@ -91,7 +91,7 @@ uint64_t *encode (Token *token_line)
 
     if (entry == NULL)
     {
-        fprintf(stderr, "Zeile %d: Unbekanntes Mnemonic: %s\n", token_line[0].line, token_line[0].text);
+        fprintf(stderr, "Line %d: Unknown mnemonic: %s\n", token_line[0].line, token_line[0].text);
         exit(-1);
     }
 
