@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.16)
-project(asmcore C)
+project(KRON-1-asmcore C)
 
-add_library(asmcore STATIC
+add_library(KRON-1-asmcore STATIC
         encode/encode.c
         encode/encode.h
         scanner/scanner.c
@@ -11,5 +11,5 @@ add_library(asmcore STATIC
         Helpers/Dictionary/Dictionary.c
         Helpers/Dictionary/Dictionary.h)
 
-target_link_libraries(asmcore PUBLIC isa)
-target_include_directories(asmcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(KRON-1-asmcore PUBLIC KRON-1-isa)
+target_include_directories(KRON-1-asmcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
